@@ -85,6 +85,19 @@ class JsonFileContactRepository implements ContactRepository
 
     public function delete(string $id): bool
     {
+        $contact = $this->find($id);
+
+        if (!$contact) {
+            return false;
+        }
+
+        $contacts = collect($this->all())
+            ->filter(fn($contact) => $contact->id !== $id)
+            ->values();
+
+        $this->write($contacts->all());
+
+        return true;
     }
 
     public function filter(array $filters): array

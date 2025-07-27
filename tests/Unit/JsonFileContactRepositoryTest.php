@@ -136,7 +136,6 @@ it('cannot update contact with duplicate phone number', function () {
 });
 
 it('can list all contacts', function () {
-
     $emptyFilters = [];
     $contacts = $this->repository->filter($emptyFilters);
 
@@ -187,4 +186,15 @@ it('can delete contact', function () {
 
     $contact = $this->repository->find($id);
     expect($contact)->toBeNull();
+});
+
+it('cannot delete with empty id', function () {
+    $deleted = $this->repository->delete('');
+    expect($deleted)->toBeFalse();
+
+    // reconfirm that all contacts still exist
+    $contacts = $this->repository->filter([]);
+
+    expect($contacts)->toBeArray()
+        ->and($contacts)->toHaveCount(10);
 });
