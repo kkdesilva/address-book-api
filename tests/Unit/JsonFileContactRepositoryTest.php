@@ -72,6 +72,36 @@ it('can create contact', function () {
     expect($contact)->not->toBeNull();
 });
 
+it('cannot create contact with duplicate email', function () {
+    $contactData = new ContactData(
+        first_name: 'Jim',
+        last_name: 'Cooper',
+        email: 'jamie.harper@example.com', // email of existing contact
+        phone: '08800555444'
+    );
+
+    expect(fn () => $this->repository->create($contactData))
+        ->toThrow(
+            ValidationException::class,
+            'The email or phone number has already been taken by another contact'
+        );
+});
+
+it('cannot create contact with duplicate phone number', function () {
+    $contactData = new ContactData(
+        first_name: 'Jim',
+        last_name: 'Cooper',
+        email: 'jim.cooper@example.com',
+        phone: '01700888444' // phone of existing contact jamie.harper
+    );
+
+    expect(fn () => $this->repository->create($contactData))
+        ->toThrow(
+            ValidationException::class,
+            'The email or phone number has already been taken by another contact'
+        );
+});
+
 it('can update contact', function () {
     $contactData = new ContactData(
         first_name: 'Charlie',
