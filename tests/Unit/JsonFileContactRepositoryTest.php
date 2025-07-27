@@ -22,7 +22,6 @@ function setupTestAddressBook(): void
 }
 
 beforeEach(function () {
-
     setupTestAddressBook();
 
     app()->bind(ContactRepository::class, function () {
@@ -134,4 +133,48 @@ it('cannot update contact with duplicate phone number', function () {
             ValidationException::class,
             'The email has already been taken by another contact.'
         );
+});
+
+it('can list all contacts', function () {
+
+    $emptyFilters = [];
+    $contacts = $this->repository->filter($emptyFilters);
+
+    expect($contacts)->toBeArray()
+        ->and($contacts)->toHaveCount(10);
+
+    $firstContact = $contacts[0];
+    expect($firstContact->first_name)->toBe('Alex')
+        ->and($firstContact->last_name)->toBe('Johnson')
+        ->and($firstContact->email)->toBe('alex.johnson@example.com');
+});
+
+it('can filter contacts by first name', function () {
+    $filters = ['first_name' => 'Morgan'];
+    $contacts = $this->repository->filter($filters);
+
+    expect($contacts)->toBeArray()
+        ->and($contacts)->toHaveCount(1)
+        ->and($contacts[0])->toMatchArray([
+            'first_name' => 'Morgan',
+            'last_name' => 'Reed',
+            'email' => 'morgan.reed@example.com',
+            'phone' => '01700999888',
+        ]);
+});
+
+it('can filter contacts by multiple fields', function () {
+    $filters = [
+        'last_name' => 'Harper',
+        'phone' => '01700888444'
+    ];
+    $contacts = $this->repository->filter($filters);
+    expect($contacts)->toBeArray()
+        ->and($contacts)->toHaveCount(1)
+        ->and($contacts[0])->toMatchArray([
+            'first_name' => 'Jamie',
+            'last_name' => 'Harper',
+            'phone' => '01700888444',
+            'email' => 'jamie.harper@example.com',
+        ]);
 });

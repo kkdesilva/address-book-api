@@ -90,7 +90,14 @@ class JsonFileContactRepository implements ContactRepository
 
     public function filter(array $filters): array
     {
-        // TODO: Implement filter() method.
+        return collect($this->all())
+            ->filter(
+                fn ($contact) => collect($filters)->every(
+                    fn ($value, $key) => empty($value) || stripos($contact->$key, $value) !== false
+                )
+            )
+            ->values()
+            ->all();
     }
 
     private function all(): array
