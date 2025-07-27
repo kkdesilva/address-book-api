@@ -4,6 +4,7 @@ use App\Contracts\ContactRepository;
 use App\DTOs\ContactData;
 use App\Repositories\JsonFileContactRepository;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 
 beforeAll(function () {
@@ -70,7 +71,7 @@ it('can update contact', function () {
         first_name: 'Charlie',
         last_name: 'Taylor',
         email: 'charlie.tylor@example.com',
-        phone: '08450555444'
+        phone: '01700777111'
     );
 
     $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
@@ -82,4 +83,52 @@ it('can update contact', function () {
         ->and($updatedContact->last_name)->toBe('Taylor')
         ->and($updatedContact->email)->toBe('charlie.tylor@example.com')
         ->and($updatedContact->phone)->toBe('08450555444');
+});
+
+it('cannot update non-existing contact', function () {
+    $contactData = new ContactData(
+        first_name: 'Charlie',
+        last_name: 'Taylor',
+        email: 'charlie.taylor@example.com',
+        phone: '08450555444'
+    );
+
+    $nonExistingId = '9990eb9-be95-457b-949e-aa9abb9c6999';
+    $updatedContact = $this->repository->update($nonExistingId, $contactData);
+    expect($updatedContact)->toBeNull();
+});
+
+it('cannot update contact with duplicate email', function () {
+    $contactData = new ContactData(
+        first_name: 'Charlie',
+        last_name: 'Frost',
+        email: 'jamie.harper@example.com',
+        phone: '01700555444'
+    );
+
+    $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
+
+
+    expect(fn() => $this->repository->update($id, $contactData))
+        ->toThrow(
+            ValidationException::class,
+            'The email has already been taken by another contact.'
+        );
+});
+
+it('cannot update contact with duplicate phone number', function () {
+    $contactData = new ContactData(
+        first_name: 'Charlie',
+        last_name: 'Frost',
+        email: 'charlie.frost@example.com',
+        phone: '01700888444' // tel of jamie.harper
+    );
+
+    $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
+
+    expect(fn() => $this->repository->update($id, $contactData))
+        ->toThrow(
+            ValidationException::class,
+            'The email has already been taken by another contact.'
+        );
 });

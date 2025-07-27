@@ -70,6 +70,12 @@ class JsonFileContactRepository implements ContactRepository
             return null;
         }
 
+        if ($this->hasDuplicateEmail($contacts, $data, $id)) {
+            throw ValidationException::withMessages([
+                'email' => ['The email has already been taken by another contact.'],
+            ]);
+        }
+
         $contacts[$index] = new Contact($id, ...$data->toArray());
         $this->write($contacts);
 
@@ -98,5 +104,16 @@ class JsonFileContactRepository implements ContactRepository
         $array = collect($contacts)->map(fn($contact) => $contact->toArray())->all();
 
         Storage::put($this->file, json_encode($array, JSON_PRETTY_PRINT));
+    }
+
+    private function hasDuplicateEmail(array $existingContacts, ContactData $data, $id): bool
+    {
+        $index = collect($existingContacts)->search(
+            fn(Contact $contact) =>
+                $contact->id !== $id &&
+                ($contact->email === $data->email || $contact->phone === $data->phone)
+        );
+
+        return !empty($index);
     }
 }
