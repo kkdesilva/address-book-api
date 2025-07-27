@@ -64,3 +64,22 @@ it('can create contact', function () {
     $contact = $this->repository->find($newContact->id);
     expect($contact)->not->toBeNull();
 });
+
+it('can update contact', function () {
+    $contactData = new ContactData(
+        first_name: 'Charlie',
+        last_name: 'Taylor',
+        email: 'charlie.tylor@example.com',
+        phone: '08450555444'
+    );
+
+    $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
+
+    $updatedContact = $this->repository->update($id, $contactData);
+
+    expect($updatedContact)->not->toBeNull()
+        ->and($updatedContact->first_name)->toBe('Charlie')
+        ->and($updatedContact->last_name)->toBe('Taylor')
+        ->and($updatedContact->email)->toBe('charlie.tylor@example.com')
+        ->and($updatedContact->phone)->toBe('08450555444');
+});
