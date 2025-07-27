@@ -92,7 +92,7 @@ class JsonFileContactRepository implements ContactRepository
         }
 
         $contacts = collect($this->all())
-            ->filter(fn($contact) => $contact->id !== $id)
+            ->filter(fn ($contact) => $contact->id !== $id)
             ->values();
 
         $this->write($contacts->all());
