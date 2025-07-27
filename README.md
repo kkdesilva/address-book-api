@@ -44,4 +44,7 @@
  - todo
 ## Dev notes
  - Plan to add id field JSON schema. It will be a UUID for immutability, Scalability, lookup performance, etc.
+ - I assume all fields are required, so I will not allow empty fields.
+ - I will not allow duplicate emails or phone numbers.
+ - Duplicate contact check can be done by email or phone number.
  
