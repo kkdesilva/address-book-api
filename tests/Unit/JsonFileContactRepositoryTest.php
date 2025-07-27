@@ -1,44 +1,16 @@
 <?php
+declare(strict_types=1);
 
-use App\Contracts\ContactRepository;
 use App\DTOs\ContactData;
-use App\Repositories\JsonFileContactRepository;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
-const TEST_ADDRESS_BOOK_FILENAME = 'test-address-book.json';
-const TEST_ADDRESS_BOOK_SOURCE_PATH = __DIR__ . '/' . TEST_ADDRESS_BOOK_FILENAME;
-const TEST_ADDRESS_BOOK_STORAGE_PATH = '/storage/app/private/' . TEST_ADDRESS_BOOK_FILENAME;
-const TEST_ADDRESS_BOOK_DISK = 'local';
-
-function ensureTestAddressBookExists(): void
-{
-    if (!file_exists(TEST_ADDRESS_BOOK_SOURCE_PATH)) {
-        expect(
-            "Required file not found: " . TEST_ADDRESS_BOOK_SOURCE_PATH . ". Please create the file with some sample json data."
-        )->dd();
-    }
-}
-
-function copyTestAddressBookToStorage(): void
-{
-    copy(
-        TEST_ADDRESS_BOOK_SOURCE_PATH,
-        dirname(__DIR__, 2) . TEST_ADDRESS_BOOK_STORAGE_PATH
-    );
-}
 
 beforeEach(function () {
-    ensureTestAddressBookExists();
-    copyTestAddressBookToStorage();
-    app()->bind(ContactRepository::class, fn () => new JsonFileContactRepository(TEST_ADDRESS_BOOK_FILENAME));
-    $this->repository = app(ContactRepository::class);
+    setupTestAddressBook($this);
 });
 
 afterEach(function () {
-    if (Storage::disk(TEST_ADDRESS_BOOK_DISK)->exists(TEST_ADDRESS_BOOK_FILENAME)) {
-        Storage::disk(TEST_ADDRESS_BOOK_DISK)->delete(TEST_ADDRESS_BOOK_FILENAME);
-    }
+    cleanupTestAddressBook();
 });
 
 it('can find contact by id', function () {

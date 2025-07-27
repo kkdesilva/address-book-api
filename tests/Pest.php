@@ -11,6 +11,10 @@
 |
 */
 
+use App\Contracts\ContactRepository;
+use App\Repositories\JsonFileContactRepository;
+use Illuminate\Support\Facades\Storage;
+
 pest()->extend(Tests\TestCase::class)
  // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Feature', 'Unit');
@@ -40,8 +44,45 @@ expect()->extend('toBeOne', function () {
 | global functions to help you to reduce the number of lines of code in your test files.
 |
 */
+const TEST_ADDRESS_BOOK_FILENAME = 'test-address-book.json';
+const TEST_ADDRESS_BOOK_SOURCE_PATH = __DIR__ . '/Unit/' . TEST_ADDRESS_BOOK_FILENAME;
+const TEST_ADDRESS_BOOK_STORAGE_PATH = '/storage/app/private/' . TEST_ADDRESS_BOOK_FILENAME;
+const TEST_ADDRESS_BOOK_DISK = 'local';
 
-function something()
+function ensureTestAddressBookExists(): void
 {
-    // ..
+    if (!file_exists(TEST_ADDRESS_BOOK_SOURCE_PATH)) {
+        expect(
+            "Required file not found: " . TEST_ADDRESS_BOOK_SOURCE_PATH . ". Please create the file with some sample json data."
+        )->dd();
+    }
 }
+
+function copyTestAddressBookToStorage(): void
+{
+    copy(
+        TEST_ADDRESS_BOOK_SOURCE_PATH,
+        dirname(__DIR__) . TEST_ADDRESS_BOOK_STORAGE_PATH
+    );
+}
+
+function setupTestAddressBookRepositoryBinding($testInstance): void
+{
+    app()->bind(ContactRepository::class, fn () => new JsonFileContactRepository(TEST_ADDRESS_BOOK_FILENAME));
+    $testInstance->repository = app(ContactRepository::class);
+}
+
+function setupTestAddressBook($testInstance): void
+{
+    ensureTestAddressBookExists();
+    copyTestAddressBookToStorage();
+    setupTestAddressBookRepositoryBinding($testInstance);
+}
+
+function cleanupTestAddressBook(): void
+{
+    if (Storage::disk(TEST_ADDRESS_BOOK_DISK)->exists(TEST_ADDRESS_BOOK_FILENAME)) {
+        Storage::disk(TEST_ADDRESS_BOOK_DISK)->delete(TEST_ADDRESS_BOOK_FILENAME);
+    }
+}
+
