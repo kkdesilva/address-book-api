@@ -7,21 +7,25 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 
-beforeAll(function () {
+function setupTestAddressBook(): void
+{
     $filePath = __DIR__ . '/test-address-book.json';
     if (file_exists($filePath)) {
         copy(
             __DIR__ . '/test-address-book.json',
-           dirname(__DIR__, 2) . '/storage/app/private/test-address-book.json'
+            dirname(__DIR__, 2) . '/storage/app/private/test-address-book.json'
         );
     } else {
         expect(
             "Required file not found: {$filePath}. Please create the file with some sample json data."
         )->dd();
     }
-});
+}
 
 beforeEach(function () {
+
+    setupTestAddressBook();
+
     app()->bind(ContactRepository::class, function () {
         return new JsonFileContactRepository('test-address-book.json');
     });
@@ -29,7 +33,7 @@ beforeEach(function () {
     $this->repository = app(ContactRepository::class);
 });
 
-afterAll(function () {
+afterEach(function () {
     if (Storage::disk('local')->exists('test-address-book.json')) {
         Storage::disk('local')->delete('test-address-book.json');
     }
@@ -71,7 +75,7 @@ it('can update contact', function () {
         first_name: 'Charlie',
         last_name: 'Taylor',
         email: 'charlie.tylor@example.com',
-        phone: '01700777111'
+        phone: '01700777222'
     );
 
     $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
@@ -82,7 +86,7 @@ it('can update contact', function () {
         ->and($updatedContact->first_name)->toBe('Charlie')
         ->and($updatedContact->last_name)->toBe('Taylor')
         ->and($updatedContact->email)->toBe('charlie.tylor@example.com')
-        ->and($updatedContact->phone)->toBe('08450555444');
+        ->and($updatedContact->phone)->toBe('01700777222');
 });
 
 it('cannot update non-existing contact', function () {
