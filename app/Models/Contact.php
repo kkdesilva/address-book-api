@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models;
@@ -11,7 +12,8 @@ class Contact
         public string $last_name,
         public string $email,
         public string $phone
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

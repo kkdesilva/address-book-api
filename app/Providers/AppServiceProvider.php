@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bindIf(ContactRepository::class, fn() => new JsonFileContactRepository());
+        $this->app->bindIf(ContactRepository::class, fn () => new JsonFileContactRepository());
     }
 
     /**

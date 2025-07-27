@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DTOs;
@@ -10,8 +11,7 @@ final readonly class ContactData
         public string $last_name,
         public string $email,
         public string $phone,
-    )
-    {
+    ) {
     }
 
     public static function fromArray(array $data): self

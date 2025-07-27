@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -40,7 +41,7 @@ class JsonFileContactRepository implements ContactRepository
         $contacts = $this->all();
 
         $index = collect($contacts)->search(
-            fn(Contact $contact) => $contact->email === $data->email || $contact->phone === $data->phone
+            fn (Contact $contact) => $contact->email === $data->email || $contact->phone === $data->phone
         );
 
         if ($index !== false) {
@@ -64,9 +65,9 @@ class JsonFileContactRepository implements ContactRepository
     {
         $contacts = $this->all();
 
-        $index = collect($contacts)->search(fn(Contact $contact) => $contact->id === $id);
+        $index = collect($contacts)->search(fn (Contact $contact) => $contact->id === $id);
 
-        if($index === false) {
+        if ($index === false) {
             return null;
         }
 
@@ -96,12 +97,12 @@ class JsonFileContactRepository implements ContactRepository
     {
         $contacts = json_decode(Storage::get($this->file), true);
 
-        return array_map(fn($data) => new Contact(...$data), $contacts);
+        return array_map(fn ($data) => new Contact(...$data), $contacts);
     }
 
     private function write(array $contacts): void
     {
-        $array = collect($contacts)->map(fn($contact) => $contact->toArray())->all();
+        $array = collect($contacts)->map(fn ($contact) => $contact->toArray())->all();
 
         Storage::put($this->file, json_encode($array, JSON_PRETTY_PRINT));
     }
@@ -109,7 +110,7 @@ class JsonFileContactRepository implements ContactRepository
     private function hasDuplicateEmail(array $existingContacts, ContactData $data, $id): bool
     {
         $index = collect($existingContacts)->search(
-            fn(Contact $contact) =>
+            fn (Contact $contact) =>
                 $contact->id !== $id &&
                 ($contact->email === $data->email || $contact->phone === $data->phone)
         );

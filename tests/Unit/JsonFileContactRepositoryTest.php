@@ -6,7 +6,6 @@ use App\Repositories\JsonFileContactRepository;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
-
 function setupTestAddressBook(): void
 {
     $filePath = __DIR__ . '/test-address-book.json';
@@ -113,7 +112,7 @@ it('cannot update contact with duplicate email', function () {
     $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
 
 
-    expect(fn() => $this->repository->update($id, $contactData))
+    expect(fn () => $this->repository->update($id, $contactData))
         ->toThrow(
             ValidationException::class,
             'The email has already been taken by another contact.'
@@ -130,7 +129,7 @@ it('cannot update contact with duplicate phone number', function () {
 
     $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
 
-    expect(fn() => $this->repository->update($id, $contactData))
+    expect(fn () => $this->repository->update($id, $contactData))
         ->toThrow(
             ValidationException::class,
             'The email has already been taken by another contact.'
