@@ -7,6 +7,8 @@ use App\Contracts\ContactRepository;
 use App\DTOs\ContactData;
 use App\Models\Contact;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class JsonFileContactRepository implements ContactRepository
 {
@@ -14,20 +16,45 @@ class JsonFileContactRepository implements ContactRepository
      * the file will be located in the storage/app/private directory.
      * location can be changed in config/filesystems.php
      */
-    private string $file = 'address-book.json';
+    private string $file;
+
+    public function __construct(string $file = 'address-book.json')
+    {
+        $this->file = $file;
+        // check the file exists, if not create it with an empty array
+        if (!Storage::exists($this->file)) {
+            Storage::put($this->file, json_encode([], JSON_PRETTY_PRINT));
+        }
+    }
 
     public function find(string $id): ?Contact
     {
-        $contacts = json_decode(Storage::get($this->file), true);
-
-        return collect($contacts)
-            ->map(fn($data) => new Contact(...$data))
-            ->firstWhere('id', $id);
+        return collect($this->all())->firstWhere('id', $id);
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function create(ContactData $data): Contact
     {
-        // TODO: Implement create() method.
+        $contacts = $this->all();
+
+        $index = collect($contacts)->search(
+            fn(Contact $contact) => $contact->email === $data->email || $contact->phone === $data->phone
+        );
+
+        if ($index !== false) {
+            throw ValidationException::withMessages([
+                'email' => ['The email or phone number has already been taken by another contact.'],
+            ]);
+        }
+
+        $id = (string) Str::uuid();
+        $newContact = new Contact($id, ...$data->toArray());
+        $contacts[] = $newContact;
+        $this->write($contacts);
+
+        return $newContact;
     }
 
     public function update(string $id, ContactData $data): ?Contact
@@ -43,5 +70,19 @@ class JsonFileContactRepository implements ContactRepository
     public function filter(array $filters): array
     {
         // TODO: Implement filter() method.
+    }
+
+    private function all(): array
+    {
+        $contacts = json_decode(Storage::get($this->file), true);
+
+        return array_map(fn($data) => new Contact(...$data), $contacts);
+    }
+
+    private function write(array $contacts): void
+    {
+        $array = collect($contacts)->map(fn($contact) => $contact->toArray())->all();
+
+        Storage::put($this->file, json_encode($array, JSON_PRETTY_PRINT));
     }
 }

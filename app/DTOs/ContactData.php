@@ -20,7 +20,12 @@ final readonly class ContactData
             $data['first_name'],
             $data['last_name'],
             $data['email'],
-            $data['phone']
+            str_replace(' ', '', $data['phone'])
         );
+    }
+
+    public function toArray(): array
+    {
+        return get_object_vars($this);
     }
 }

@@ -12,4 +12,9 @@ class Contact
         public string $email,
         public string $phone
     ) {}
+
+    public function toArray(): array
+    {
+        return get_object_vars($this);
+    }
 }

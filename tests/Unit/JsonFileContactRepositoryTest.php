@@ -1,16 +1,66 @@
 <?php
 
 use App\Contracts\ContactRepository;
-use App\Models\Contact;
+use App\DTOs\ContactData;
+use App\Repositories\JsonFileContactRepository;
+use Illuminate\Support\Facades\Storage;
+
+
+beforeAll(function () {
+    $filePath = __DIR__ . '/test-address-book.json';
+    if (file_exists($filePath)) {
+        copy(
+            __DIR__ . '/test-address-book.json',
+           dirname(__DIR__, 2) . '/storage/app/private/test-address-book.json'
+        );
+    } else {
+        expect(
+            "Required file not found: {$filePath}. Please create the file with some sample json data."
+        )->dd();
+    }
+});
+
+beforeEach(function () {
+    app()->bind(ContactRepository::class, function () {
+        return new JsonFileContactRepository('test-address-book.json');
+    });
+
+    $this->repository = app(ContactRepository::class);
+});
+
+afterAll(function () {
+    if (Storage::disk('local')->exists('test-address-book.json')) {
+        Storage::disk('local')->delete('test-address-book.json');
+    }
+});
 
 it('can find contact by id', function () {
-    $repository = app(ContactRepository::class);
 
-    $contact = $repository->find('687b4cbd-b175-416f-b9d1-13ff81c81775');
+    $contact = $this->repository->find('216049ae-ab21-4672-bc06-3eb370d3fb77');
 
     expect($contact)->not->toBeNull()
-        ->and($contact->first_name)->toBe('Ken')
-        ->and($contact->last_name)->toBe('Barlow')
-        ->and($contact->email)->toBe('ken.barlow@corrie.co.uk')
-        ->and($contact->phone)->toBe('019134784929');
+        ->and($contact->first_name)->toBe('Morgan')
+        ->and($contact->last_name)->toBe('Reed')
+        ->and($contact->email)->toBe('morgan.reed@example.com')
+        ->and($contact->phone)->toBe('01700999888');
+});
+
+it('can create contact', function () {
+
+    $newContact = $this->repository->create(
+        new ContactData(
+            first_name: 'Mark',
+            last_name: 'Taylor',
+            email: 'mark.taylor@example.com',
+            phone: '01880999888'
+        )
+    );
+
+    expect($newContact->id)->toBeUuid()->toBeString()
+        ->and($newContact->first_name)->toBe('Mark')
+        ->and($newContact->last_name)->toBe('Taylor')
+        ->and($newContact->email)->toBe('mark.taylor@example.com');
+
+    $contact = $this->repository->find($newContact->id);
+    expect($contact)->not->toBeNull();
 });
