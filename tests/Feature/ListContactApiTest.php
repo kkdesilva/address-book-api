@@ -15,8 +15,8 @@ it('can fetch all contacts', function () {
     $response = $this->getJson('/api/v1/contacts');
     $response->assertOk()
         ->assertJson(
-            fn (AssertableJson $json) => $json->has('data', 10)
-                ->has('data.0', fn (AssertableJson $json) => $json
+            fn (AssertableJson $json) => $json->has(10)
+                ->has(0, fn (AssertableJson $json) => $json
                     ->where('first_name', 'Alex')
                     ->where('last_name', 'Johnson')
                     ->where('email', 'alex.johnson@example.com')
@@ -29,8 +29,8 @@ it('can filter contacts by query parma', function () {
     $response = $this->getJson('/api/v1/contacts?first_name=Alex');
     $response->assertOk()
         ->assertJson(
-            fn (AssertableJson $json) => $json->has('data', 1)
-                ->has('data.0', fn (AssertableJson $json) => $json
+            fn (AssertableJson $json) => $json->has(1)
+                ->has(0, fn (AssertableJson $json) => $json
                     ->where('first_name', 'Alex')
                     ->where('last_name', 'Johnson')
                     ->where('email', 'alex.johnson@example.com')
@@ -44,8 +44,8 @@ it('can filter contacts by multiple query parma', function () {
     $response = $this->getJson('/api/v1/contacts?first_name=Alex&phone=01700111222');
     $response->assertOk()
         ->assertJson(
-            fn (AssertableJson $json) => $json->has('data', 1)
-                ->has('data.0', fn (AssertableJson $json) => $json
+            fn (AssertableJson $json) => $json->has(1)
+                ->has(0, fn (AssertableJson $json) => $json
                     ->where('first_name', 'Alex')
                     ->where('last_name', 'Johnson')
                     ->where('email', 'alex.johnson@example.com')
@@ -58,8 +58,5 @@ it('can filter contacts by multiple query parma', function () {
 it('returns empty array when no matching records found', function () {
     $response = $this->getJson('/api/v1/contacts?first_name=new-contact&phone=01700111222');
     $response->assertOk()
-        ->assertJson(
-            fn (AssertableJson $json) => $json->where('data', [])
-            ->missing('data.0')
-        );
+        ->assertJson(fn (AssertableJson $json) => $json->has(0));
 });

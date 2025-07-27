@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\ContactRepository;
 use App\Repositories\JsonFileContactRepository;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // disable wrapping of JSON resources with a data key
+        JsonResource::withoutWrapping();
     }
 }
