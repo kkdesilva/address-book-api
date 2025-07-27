@@ -6,34 +6,38 @@ use App\Repositories\JsonFileContactRepository;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
-function setupTestAddressBook(): void
+const TEST_ADDRESS_BOOK_FILENAME = 'test-address-book.json';
+const TEST_ADDRESS_BOOK_SOURCE_PATH = __DIR__ . '/' . TEST_ADDRESS_BOOK_FILENAME;
+const TEST_ADDRESS_BOOK_STORAGE_PATH = '/storage/app/private/' . TEST_ADDRESS_BOOK_FILENAME;
+const TEST_ADDRESS_BOOK_DISK = 'local';
+
+function ensureTestAddressBookExists(): void
 {
-    $filePath = __DIR__ . '/test-address-book.json';
-    if (file_exists($filePath)) {
-        copy(
-            __DIR__ . '/test-address-book.json',
-            dirname(__DIR__, 2) . '/storage/app/private/test-address-book.json'
-        );
-    } else {
+    if (!file_exists(TEST_ADDRESS_BOOK_SOURCE_PATH)) {
         expect(
-            "Required file not found: {$filePath}. Please create the file with some sample json data."
+            "Required file not found: " . TEST_ADDRESS_BOOK_SOURCE_PATH . ". Please create the file with some sample json data."
         )->dd();
     }
 }
 
+function copyTestAddressBookToStorage(): void
+{
+    copy(
+        TEST_ADDRESS_BOOK_SOURCE_PATH,
+        dirname(__DIR__, 2) . TEST_ADDRESS_BOOK_STORAGE_PATH
+    );
+}
+
 beforeEach(function () {
-    setupTestAddressBook();
-
-    app()->bind(ContactRepository::class, function () {
-        return new JsonFileContactRepository('test-address-book.json');
-    });
-
+    ensureTestAddressBookExists();
+    copyTestAddressBookToStorage();
+    app()->bind(ContactRepository::class, fn () => new JsonFileContactRepository(TEST_ADDRESS_BOOK_FILENAME));
     $this->repository = app(ContactRepository::class);
 });
 
 afterEach(function () {
-    if (Storage::disk('local')->exists('test-address-book.json')) {
-        Storage::disk('local')->delete('test-address-book.json');
+    if (Storage::disk(TEST_ADDRESS_BOOK_DISK)->exists(TEST_ADDRESS_BOOK_FILENAME)) {
+        Storage::disk(TEST_ADDRESS_BOOK_DISK)->delete(TEST_ADDRESS_BOOK_FILENAME);
     }
 });
 
