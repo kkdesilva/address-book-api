@@ -178,3 +178,13 @@ it('can filter contacts by multiple fields', function () {
             'email' => 'jamie.harper@example.com',
         ]);
 });
+
+it('can delete contact', function () {
+    $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
+    $deleted = $this->repository->delete($id);
+
+    expect($deleted)->toBeTrue();
+
+    $contact = $this->repository->find($id);
+    expect($contact)->toBeNull();
+});

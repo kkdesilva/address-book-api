@@ -85,7 +85,6 @@ class JsonFileContactRepository implements ContactRepository
 
     public function delete(string $id): bool
     {
-        // TODO: Implement delete() method.
     }
 
     public function filter(array $filters): array
@@ -109,7 +108,7 @@ class JsonFileContactRepository implements ContactRepository
 
     private function write(array $contacts): void
     {
-        $array = collect($contacts)->map(fn ($contact) => $contact->toArray())->all();
+        $array = collect($contacts)->map(fn (Contact $contact) => $contact->toArray())->all();
 
         Storage::put($this->file, json_encode($array, JSON_PRETTY_PRINT));
     }
