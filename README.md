@@ -4,7 +4,7 @@
 - This project is to build a simple RESTful address book API built using Laravel
 - The project showcase the ability to create, read, update, and delete contacts in an address book.
 - It's a requirement that a JSON file should be used to store contacts.
-### Example JSON file:
+### Example JSON schema:
 ```json
 [
     {
@@ -43,5 +43,5 @@
 ## Setup
  - todo
 ## Dev notes
- - todo
+ - Plan to add id field JSON schema. It will be a UUID for immutability, Scalability, lookup performance, etc.
  
