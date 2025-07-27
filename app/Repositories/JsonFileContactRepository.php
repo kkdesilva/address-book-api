@@ -57,9 +57,23 @@ class JsonFileContactRepository implements ContactRepository
         return $newContact;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function update(string $id, ContactData $data): ?Contact
     {
-        // TODO: Implement update() method.
+        $contacts = $this->all();
+
+        $index = collect($contacts)->search(fn(Contact $contact) => $contact->id === $id);
+
+        if($index === false) {
+            return null;
+        }
+
+        $contacts[$index] = new Contact($id, ...$data->toArray());
+        $this->write($contacts);
+
+        return $contacts[$index];
     }
 
     public function delete(string $id): bool
