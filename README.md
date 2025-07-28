@@ -42,6 +42,7 @@
 
 ## Setup
  - Clone the repository
+ - Create a `.env` file by copying `.env.example`
  - Run `composer install` to install dependencies
  - Run `php artisan serve` to start the server
  - The API will be available at `http://localhost:8000/api/v1/contacts`
