@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class JsonFileContactRepository implements ContactRepository
+readonly class JsonFileContactRepository implements ContactRepository
 {
-    public function __construct(private readonly string $file = 'address-book.json')
+    public function __construct(private string $file = 'address-book.json')
     {
         // check the file exists, if not create it with an empty array
         if (!Storage::exists($this->file)) {
@@ -80,7 +80,7 @@ class JsonFileContactRepository implements ContactRepository
     {
         $contact = $this->find($id);
 
-        if (!$contact instanceof \App\Models\Contact) {
+        if (!$contact instanceof Contact) {
             return false;
         }
 
@@ -109,7 +109,7 @@ class JsonFileContactRepository implements ContactRepository
     {
         $contacts = json_decode((string) Storage::get($this->file), true);
 
-        return array_map(fn ($data): \App\Models\Contact => new Contact(...$data), $contacts);
+        return array_map(fn ($data): Contact => new Contact(...$data), $contacts);
     }
 
     private function write(array $contacts): void

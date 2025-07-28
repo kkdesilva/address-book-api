@@ -24,7 +24,7 @@ it('can store a contact', function (): void {
     $response = $this->postJson(route('api.v1.contacts.store'), $data);
     $response->assertCreated()
         ->assertJson(
-            fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->where('first_name', 'John')
+            fn (AssertableJson $json): AssertableJson => $json->where('first_name', 'John')
                 ->where('last_name', 'Doe')
                 ->where('email', 'john.doe@example.com')
                 ->where('phone', '1234567890')
