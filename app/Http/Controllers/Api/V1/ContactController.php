@@ -9,6 +9,7 @@ use App\DTOs\ContactData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContactRequest;
 use App\Http\Resources\ContactResource;
+use App\Models\Contact;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -51,7 +52,7 @@ final class ContactController extends Controller
     {
         $contact = $this->repo->find($id);
 
-        if (!$contact) {
+        if (!$contact instanceof Contact) {
             return response()->json(['message' => 'Contact not found.'], Response::HTTP_NOT_FOUND);
         }
 
@@ -67,7 +68,7 @@ final class ContactController extends Controller
 
         $updatedContact = $this->repo->update($id, $data);
 
-        if (!$updatedContact) {
+        if (!$updatedContact instanceof Contact) {
             return response()->json(
                 ['message' => 'Contact cannot be updated or not found.'],
                 Response::HTTP_UNPROCESSABLE_ENTITY
@@ -84,7 +85,7 @@ final class ContactController extends Controller
     {
         $contact = $this->repo->find($id);
 
-        if (!$contact) {
+        if (!$contact instanceof Contact) {
             return response()->json(['message' => 'Contact not found.'], Response::HTTP_NOT_FOUND);
         }
 

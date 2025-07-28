@@ -7,15 +7,15 @@ namespace Tests\Unit;
 use App\DTOs\ContactData;
 use Illuminate\Validation\ValidationException;
 
-beforeEach(function () {
+beforeEach(function (): void {
     setupTestAddressBook($this);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     cleanupTestAddressBook();
 });
 
-it('can find contact by id', function () {
+it('can find contact by id', function (): void {
 
     $contact = $this->repository->find('216049ae-ab21-4672-bc06-3eb370d3fb77');
 
@@ -26,7 +26,7 @@ it('can find contact by id', function () {
         ->and($contact->phone)->toBe('01700999888');
 });
 
-it('can create contact', function () {
+it('can create contact', function (): void {
 
     $newContact = $this->repository->create(
         new ContactData(
@@ -46,7 +46,7 @@ it('can create contact', function () {
     expect($contact)->not->toBeNull();
 });
 
-it('cannot create contact with duplicate email', function () {
+it('cannot create contact with duplicate email', function (): void {
     $contactData = new ContactData(
         first_name: 'Jim',
         last_name: 'Cooper',
@@ -61,7 +61,7 @@ it('cannot create contact with duplicate email', function () {
         );
 });
 
-it('cannot create contact with duplicate phone number', function () {
+it('cannot create contact with duplicate phone number', function (): void {
     $contactData = new ContactData(
         first_name: 'Jim',
         last_name: 'Cooper',
@@ -76,7 +76,7 @@ it('cannot create contact with duplicate phone number', function () {
         );
 });
 
-it('can update contact', function () {
+it('can update contact', function (): void {
     $contactData = new ContactData(
         first_name: 'Charlie',
         last_name: 'Taylor',
@@ -95,7 +95,7 @@ it('can update contact', function () {
         ->and($updatedContact->phone)->toBe('01700777222');
 });
 
-it('cannot update non-existing contact', function () {
+it('cannot update non-existing contact', function (): void {
     $contactData = new ContactData(
         first_name: 'Charlie',
         last_name: 'Taylor',
@@ -108,7 +108,7 @@ it('cannot update non-existing contact', function () {
     expect($updatedContact)->toBeNull();
 });
 
-it('cannot update contact with duplicate email', function () {
+it('cannot update contact with duplicate email', function (): void {
     $contactData = new ContactData(
         first_name: 'Charlie',
         last_name: 'Frost',
@@ -126,7 +126,7 @@ it('cannot update contact with duplicate email', function () {
         );
 });
 
-it('cannot update contact with duplicate phone number', function () {
+it('cannot update contact with duplicate phone number', function (): void {
     $contactData = new ContactData(
         first_name: 'Charlie',
         last_name: 'Frost',
@@ -143,7 +143,7 @@ it('cannot update contact with duplicate phone number', function () {
         );
 });
 
-it('can list all contacts', function () {
+it('can list all contacts', function (): void {
     $emptyFilters = [];
     $contacts = $this->repository->filter($emptyFilters);
 
@@ -156,7 +156,7 @@ it('can list all contacts', function () {
         ->and($firstContact->email)->toBe('alex.johnson@example.com');
 });
 
-it('can filter contacts by first name', function () {
+it('can filter contacts by first name', function (): void {
     $filters = ['first_name' => 'Morgan'];
     $contacts = $this->repository->filter($filters);
 
@@ -170,7 +170,7 @@ it('can filter contacts by first name', function () {
         ]);
 });
 
-it('can filter contacts by multiple fields', function () {
+it('can filter contacts by multiple fields', function (): void {
     $filters = [
         'last_name' => 'Harper',
         'phone' => '01700888444'
@@ -186,7 +186,7 @@ it('can filter contacts by multiple fields', function () {
         ]);
 });
 
-it('can delete contact', function () {
+it('can delete contact', function (): void {
     $id = '33370eb9-be95-457b-949e-aa9abb9c6c46';
     $deleted = $this->repository->delete($id);
 
@@ -196,7 +196,7 @@ it('can delete contact', function () {
     expect($contact)->toBeNull();
 });
 
-it('cannot delete with empty id', function () {
+it('cannot delete with empty id', function (): void {
     $deleted = $this->repository->delete('');
     expect($deleted)->toBeFalse();
 

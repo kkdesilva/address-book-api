@@ -6,15 +6,15 @@ namespace Tests\Feature;
 
 use Illuminate\Testing\Fluent\AssertableJson;
 
-beforeEach(function () {
+beforeEach(function (): void {
     setupTestAddressBook($this);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     cleanupTestAddressBook();
 });
 
-it('can update a contact', function () {
+it('can update a contact', function (): void {
     $id = '216049ae-ab21-4672-bc06-3eb370d3fb77';
     $data = [
         'first_name' => 'Morgan van der',
@@ -25,7 +25,7 @@ it('can update a contact', function () {
     $response = $this->putJson(route('api.v1.contacts.update', ['contact' => $id]), $data);
     $response->assertOk()
         ->assertJson(
-            fn (AssertableJson $json) => $json->where('first_name', 'Morgan van der')
+            fn (AssertableJson $json): AssertableJson => $json->where('first_name', 'Morgan van der')
                 ->where('last_name', 'Reed')
                 ->where('email', 'morgan.vand.reed@example.com')
                 ->where('phone', '01700999888')
@@ -33,7 +33,7 @@ it('can update a contact', function () {
         );
 });
 
-it('cannot update a contact when email is empty', function () {
+it('cannot update a contact when email is empty', function (): void {
     $id = '216049ae-ab21-4672-bc06-3eb370d3fb77';
     $data = [
         'first_name' => 'Morgan van der',
@@ -46,7 +46,7 @@ it('cannot update a contact when email is empty', function () {
         ->assertJsonValidationErrors(['email']);
 });
 
-it('cannot update a contact when the id does not exist', function () {
+it('cannot update a contact when the id does not exist', function (): void {
     $id = '00000000-0000-0000-0000-000000000000'; // non-existent ID
     $data = [
         'first_name' => 'Morgan van der',
@@ -59,7 +59,7 @@ it('cannot update a contact when the id does not exist', function () {
         ->assertJson(['message' => 'Contact cannot be updated or not found.']);
 });
 
-it('cannot update a contact when email or phone already exists', function () {
+it('cannot update a contact when email or phone already exists', function (): void {
     $id = '216049ae-ab21-4672-bc06-3eb370d3fb77'; // existing contact ID
     $data = [
         'first_name' => 'Morgan van der',

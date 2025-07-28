@@ -9,7 +9,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        then: function () {
+        then: function (): void {
             Route::middleware('api')
                 ->prefix('api/v1')
                 ->name('api.v1.')

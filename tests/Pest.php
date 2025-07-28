@@ -66,7 +66,7 @@ function copyTestAddressBookToStorage(): void
 
 function setupTestAddressBookRepositoryBinding($testInstance): void
 {
-    app()->bind(ContactRepository::class, fn () => new JsonFileContactRepository(TEST_ADDRESS_BOOK_FILENAME));
+    app()->bind(ContactRepository::class, fn (): JsonFileContactRepository => new JsonFileContactRepository(TEST_ADDRESS_BOOK_FILENAME));
     $testInstance->repository = app(ContactRepository::class);
 }
 

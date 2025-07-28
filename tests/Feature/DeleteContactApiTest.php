@@ -6,15 +6,15 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Storage;
 
-beforeEach(function () {
+beforeEach(function (): void {
     setupTestAddressBook($this);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     cleanupTestAddressBook();
 });
 
-it('deletes a contact', function () {
+it('deletes a contact', function (): void {
 
     $contact = $this->getJson(route('api.v1.contacts.index', ['first_name' => 'Morgan']))[0];
 
@@ -28,7 +28,7 @@ it('deletes a contact', function () {
         ->assertJson(['message' => 'Contact not found.']);
 });
 
-it('cannot delete a contact that does not exist', function () {
+it('cannot delete a contact that does not exist', function (): void {
     $response = $this->deleteJson(
         route('api.v1.contacts.destroy', '00000000-0000-0000-0000-000000000000')
     );

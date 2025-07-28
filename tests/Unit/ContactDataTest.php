@@ -6,7 +6,7 @@ namespace Tests\Unit;
 
 use App\DTOs\ContactData;
 
-it('replace spaces in phone number', function () {
+it('replace spaces in phone number', function (): void {
     $data = [
         'first_name' => 'John',
         'last_name' => 'Doe',

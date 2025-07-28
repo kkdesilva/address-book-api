@@ -6,22 +6,22 @@ namespace Tests\Feature;
 
 use Illuminate\Testing\Fluent\AssertableJson;
 
-beforeEach(function () {
+beforeEach(function (): void {
     setupTestAddressBook($this);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     cleanupTestAddressBook();
 });
 
-it('can fetch all contacts', function () {
+it('can fetch all contacts', function (): void {
     $response = $this->getJson(route('api.v1.contacts.index'));
     $response->assertOk()
         ->assertJson(
-            fn (AssertableJson $json) => $json->has(10)
+            fn (AssertableJson $json): AssertableJson => $json->has(10)
                 ->has(
                     0,
-                    fn (AssertableJson $json) => $json
+                    fn (AssertableJson $json): AssertableJson => $json
                     ->where('first_name', 'Alex')
                     ->where('last_name', 'Johnson')
                     ->where('email', 'alex.johnson@example.com')
@@ -30,14 +30,14 @@ it('can fetch all contacts', function () {
         );
 });
 
-it('can filter contacts by query parma', function () {
+it('can filter contacts by query parma', function (): void {
     $response = $this->getJson(route('api.v1.contacts.index', ['first_name' => 'Alex']));
     $response->assertOk()
         ->assertJson(
-            fn (AssertableJson $json) => $json->has(1)
+            fn (AssertableJson $json): AssertableJson => $json->has(1)
                 ->has(
                     0,
-                    fn (AssertableJson $json) => $json
+                    fn (AssertableJson $json): AssertableJson => $json
                     ->where('first_name', 'Alex')
                     ->where('last_name', 'Johnson')
                     ->where('email', 'alex.johnson@example.com')
@@ -47,7 +47,7 @@ it('can filter contacts by query parma', function () {
         );
 });
 
-it('can filter contacts by multiple query parma', function () {
+it('can filter contacts by multiple query parma', function (): void {
     $response = $this->getJson(
         route(
             'api.v1.contacts.index',
@@ -56,10 +56,10 @@ it('can filter contacts by multiple query parma', function () {
     );
     $response->assertOk()
         ->assertJson(
-            fn (AssertableJson $json) => $json->has(1)
+            fn (AssertableJson $json): AssertableJson => $json->has(1)
                 ->has(
                     0,
-                    fn (AssertableJson $json) => $json
+                    fn (AssertableJson $json): AssertableJson => $json
                     ->where('first_name', 'Alex')
                     ->where('last_name', 'Johnson')
                     ->where('email', 'alex.johnson@example.com')
@@ -69,7 +69,7 @@ it('can filter contacts by multiple query parma', function () {
         );
 });
 
-it('returns empty array when no matching records found', function () {
+it('returns empty array when no matching records found', function (): void {
     $response = $this->getJson(
         route(
             'api.v1.contacts.index',
@@ -77,5 +77,5 @@ it('returns empty array when no matching records found', function () {
         )
     );
     $response->assertOk()
-        ->assertJson(fn (AssertableJson $json) => $json->has(0));
+        ->assertJson(fn (AssertableJson $json): AssertableJson => $json->has(0));
 });

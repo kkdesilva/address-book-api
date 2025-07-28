@@ -6,15 +6,15 @@ namespace Tests\Feature;
 
 use Illuminate\Testing\Fluent\AssertableJson;
 
-beforeEach(function () {
+beforeEach(function (): void {
     setupTestAddressBook($this);
 });
 
-afterEach(function () {
+afterEach(function (): void {
     cleanupTestAddressBook();
 });
 
-it('can store a contact', function () {
+it('can store a contact', function (): void {
     $data = [
         'first_name' => 'John',
         'last_name' => 'Doe',
@@ -24,7 +24,7 @@ it('can store a contact', function () {
     $response = $this->postJson(route('api.v1.contacts.store'), $data);
     $response->assertCreated()
         ->assertJson(
-            fn (AssertableJson $json) => $json->where('first_name', 'John')
+            fn (AssertableJson $json): \Illuminate\Testing\Fluent\AssertableJson => $json->where('first_name', 'John')
                 ->where('last_name', 'Doe')
                 ->where('email', 'john.doe@example.com')
                 ->where('phone', '1234567890')
@@ -32,7 +32,7 @@ it('can store a contact', function () {
         );
 });
 
-it('returns validation error when storing a contact with existing email', function () {
+it('returns validation error when storing a contact with existing email', function (): void {
     $data = [
         'first_name' => 'Jane',
         'last_name' => 'Doe',

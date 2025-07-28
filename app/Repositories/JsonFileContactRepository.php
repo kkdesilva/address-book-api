@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class JsonFileContactRepository implements ContactRepository
 {
-    public function __construct(private readonly string $file = 'address-book.json')
+    public function __construct(private string $file = 'address-book.json')
     {
         // check the file exists, if not create it with an empty array
         if (!Storage::exists($this->file)) {
@@ -34,7 +34,7 @@ class JsonFileContactRepository implements ContactRepository
         $contacts = $this->all();
 
         $index = collect($contacts)->search(
-            fn (Contact $contact) => $contact->email === $data->email || $contact->phone === $data->phone
+            fn (Contact $contact): bool => $contact->email === $data->email || $contact->phone === $data->phone
         );
 
         if ($index !== false) {
@@ -58,7 +58,7 @@ class JsonFileContactRepository implements ContactRepository
     {
         $contacts = $this->all();
 
-        $index = collect($contacts)->search(fn (Contact $contact) => $contact->id === $id);
+        $index = collect($contacts)->search(fn (Contact $contact): bool => $contact->id === $id);
 
         if ($index === false) {
             return null;
@@ -80,12 +80,12 @@ class JsonFileContactRepository implements ContactRepository
     {
         $contact = $this->find($id);
 
-        if (!$contact) {
+        if (!$contact instanceof \App\Models\Contact) {
             return false;
         }
 
         $contacts = collect($this->all())
-            ->filter(fn ($contact) => $contact->id !== $id)
+            ->filter(fn ($contact): bool => $contact->id !== $id)
             ->values();
 
         $this->write($contacts->all());
@@ -98,7 +98,7 @@ class JsonFileContactRepository implements ContactRepository
         return collect($this->all())
             ->filter(
                 fn ($contact) => collect($filters)->every(
-                    fn ($value, $key) => empty($value) || stripos((string) $contact->$key, (string) $value) !== false
+                    fn ($value, $key): bool => empty($value) || stripos((string) $contact->$key, (string) $value) !== false
                 )
             )
             ->values()
@@ -109,20 +109,20 @@ class JsonFileContactRepository implements ContactRepository
     {
         $contacts = json_decode((string) Storage::get($this->file), true);
 
-        return array_map(fn ($data) => new Contact(...$data), $contacts);
+        return array_map(fn ($data): \App\Models\Contact => new Contact(...$data), $contacts);
     }
 
     private function write(array $contacts): void
     {
-        $array = collect($contacts)->map(fn (Contact $contact) => $contact->toArray())->all();
+        $array = collect($contacts)->map(fn (Contact $contact): array => $contact->toArray())->all();
 
         Storage::put($this->file, json_encode($array, JSON_PRETTY_PRINT));
     }
 
-    private function hasDuplicateEmail(array $existingContacts, ContactData $data, $id): bool
+    private function hasDuplicateEmail(array $existingContacts, ContactData $data, string $id): bool
     {
         $index = collect($existingContacts)->search(
-            fn (Contact $contact) =>
+            fn (Contact $contact): bool =>
                 $contact->id !== $id &&
                 ($contact->email === $data->email || $contact->phone === $data->phone)
         );
