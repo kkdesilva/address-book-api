@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 use App\DTOs\ContactData;
 use Illuminate\Validation\ValidationException;
-
 
 beforeEach(function () {
     setupTestAddressBook($this);

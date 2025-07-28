@@ -85,4 +85,3 @@ function cleanupTestAddressBook(): void
         Storage::disk(TEST_ADDRESS_BOOK_DISK)->delete(TEST_ADDRESS_BOOK_FILENAME);
     }
 }
-

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -18,7 +19,7 @@ it('can store a contact', function () {
         'email' => 'john.doe@example.com',
         'phone' => '1234567890',
     ];
-    $response = $this->postJson(route('api.v1.contacts.index'), $data);
+    $response = $this->postJson(route('api.v1.contacts.store'), $data);
     $response->assertCreated()
         ->assertJson(
             fn (AssertableJson $json) => $json->where('first_name', 'John')
@@ -37,7 +38,7 @@ it('returns validation error when storing a contact with existing email', functi
         'phone' => '09900111999',
     ];
 
-    $response = $this->postJson(route('api.v1.contacts.index'), $data);
+    $response = $this->postJson(route('api.v1.contacts.store'), $data);
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['email']);
 });
