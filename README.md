@@ -53,4 +53,5 @@
  - Duplicate contact check can be done by email or phone number.
  - I use Pest for unit and feature testing.
  - I use Larastan for static analysis, Pint with PSR-12 for code formatting, and Rector.
+ - Dev environment is PHP v8.4.4 with Xdebug enabled.
  
