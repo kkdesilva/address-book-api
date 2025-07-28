@@ -80,8 +80,16 @@ final class ContactController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): \Illuminate\Http\Response|JsonResponse
     {
-        //
+        $contact = $this->repo->find($id);
+
+        if (!$contact) {
+            return response()->json(['message' => 'Contact not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->repo->delete($id);
+
+        return response()->noContent();
     }
 }
