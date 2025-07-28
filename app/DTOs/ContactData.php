@@ -14,6 +14,10 @@ final readonly class ContactData
     ) {
     }
 
+    /**
+     * @param array<string, string> $data
+     *
+     */
     public static function fromArray(array $data): self
     {
         return new self(
@@ -24,6 +28,9 @@ final readonly class ContactData
         );
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function toArray(): array
     {
         return get_object_vars($this);

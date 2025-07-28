@@ -10,6 +10,7 @@ use App\Models\Contact;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 
 readonly class JsonFileContactRepository implements ContactRepository
 {
@@ -17,7 +18,11 @@ readonly class JsonFileContactRepository implements ContactRepository
     {
         // check the file exists, if not create it with an empty array
         if (!Storage::exists($this->file)) {
-            Storage::put($this->file, json_encode([], JSON_PRETTY_PRINT));
+            $content = json_encode([], JSON_PRETTY_PRINT);
+            if ($content === false) {
+                throw new RuntimeException('Failed to encode data as JSON');
+            }
+            Storage::put($this->file, $content);
         }
     }
 
@@ -93,6 +98,10 @@ readonly class JsonFileContactRepository implements ContactRepository
         return true;
     }
 
+    /**
+     * @param array<string, string|null> $filters
+     * @return array<Contact>
+     */
     public function filter(array $filters): array
     {
         return collect($this->all())
@@ -105,6 +114,9 @@ readonly class JsonFileContactRepository implements ContactRepository
             ->all();
     }
 
+    /**
+     * @return Contact[]
+     */
     private function all(): array
     {
         $contacts = json_decode((string) Storage::get($this->file), true);
@@ -112,13 +124,25 @@ readonly class JsonFileContactRepository implements ContactRepository
         return array_map(fn ($data): Contact => new Contact(...$data), $contacts);
     }
 
+    /**
+     * @param Contact[] $contacts
+     */
     private function write(array $contacts): void
     {
         $array = collect($contacts)->map(fn (Contact $contact): array => $contact->toArray())->all();
 
-        Storage::put($this->file, json_encode($array, JSON_PRETTY_PRINT));
+        $content = json_encode($array, JSON_PRETTY_PRINT);
+
+        if ($content === false) {
+            throw new RuntimeException('Failed to encode data as JSON');
+        }
+
+        Storage::put($this->file, $content);
     }
 
+    /**
+     * @param Contact[] $existingContacts
+     */
     private function hasDuplicateEmail(array $existingContacts, ContactData $data, string $id): bool
     {
         $index = collect($existingContacts)->search(

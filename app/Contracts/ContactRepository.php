@@ -13,5 +13,10 @@ interface ContactRepository
     public function create(ContactData $data): Contact;
     public function update(string $id, ContactData $data): ?Contact;
     public function delete(string $id): bool;
+
+    /**
+     * @param array<string, string|null> $filters
+     * @return array<Contact>
+     */
     public function filter(array $filters): array;
 }
