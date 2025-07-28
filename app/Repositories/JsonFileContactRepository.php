@@ -13,15 +13,8 @@ use Illuminate\Validation\ValidationException;
 
 class JsonFileContactRepository implements ContactRepository
 {
-    /*
-     * the file will be located in the storage/app/private directory.
-     * location can be changed in config/filesystems.php
-     */
-    private string $file;
-
-    public function __construct(string $file = 'address-book.json')
+    public function __construct(private readonly string $file = 'address-book.json')
     {
-        $this->file = $file;
         // check the file exists, if not create it with an empty array
         if (!Storage::exists($this->file)) {
             Storage::put($this->file, json_encode([], JSON_PRETTY_PRINT));
@@ -105,7 +98,7 @@ class JsonFileContactRepository implements ContactRepository
         return collect($this->all())
             ->filter(
                 fn ($contact) => collect($filters)->every(
-                    fn ($value, $key) => empty($value) || stripos($contact->$key, $value) !== false
+                    fn ($value, $key) => empty($value) || stripos((string) $contact->$key, (string) $value) !== false
                 )
             )
             ->values()
@@ -114,7 +107,7 @@ class JsonFileContactRepository implements ContactRepository
 
     private function all(): array
     {
-        $contacts = json_decode(Storage::get($this->file), true);
+        $contacts = json_decode((string) Storage::get($this->file), true);
 
         return array_map(fn ($data) => new Contact(...$data), $contacts);
     }

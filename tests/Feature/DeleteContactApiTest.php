@@ -42,7 +42,7 @@ it('cannot delete a contact that does not exist', function () {
         ->not->toBeEmpty('Address book file should not be empty after failed delete.');
 
     // verify the address book file contains the original contacts
-    $contacts = json_decode(Storage::get('test-address-book.json'), true);
+    $contacts = json_decode((string) Storage::get('test-address-book.json'), true);
     expect($contacts)
         ->toHaveCount(10, 'Address book file should still contain 10 contacts after failed delete.')
         ->and($contacts[0]['first_name'])->toBe('Alex', 'First contact should still be Alex.')
