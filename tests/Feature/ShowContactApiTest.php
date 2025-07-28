@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -17,7 +18,7 @@ it('can show a contact', function () {
     $response = $this->getJson(route('api.v1.contacts.show', ['contact' => $id]));
     $response->assertOk()
         ->assertJson(
-            fn(AssertableJson $json) => $json->where('first_name', 'Morgan')
+            fn (AssertableJson $json) => $json->where('first_name', 'Morgan')
                 ->where('last_name', 'Reed')
                 ->where('email', 'morgan.reed@example.com')
                 ->where('phone', '01700999888')
