@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class JsonFileContactRepository implements ContactRepository
 {
-    public function __construct(private string $file = 'address-book.json')
+    public function __construct(private readonly string $file = 'address-book.json')
     {
         // check the file exists, if not create it with an empty array
         if (!Storage::exists($this->file)) {
