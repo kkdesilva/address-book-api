@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1;
 
@@ -10,10 +11,11 @@ use App\Http\Resources\ContactResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Symfony\Component\HttpFoundation\Response;
 
-class ContactController extends Controller
+final class ContactController extends Controller
 {
-    public function __construct(protected ContactRepository $repo)
+    public function __construct(private readonly ContactRepository $repo)
     {
     }
 
@@ -44,9 +46,15 @@ class ContactController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): ContactResource|JsonResponse
     {
-        //
+        $contact = $this->repo->find($id);
+
+        if (!$contact) {
+            return response()->json(['message' => 'Contact not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        return ContactResource::make($contact);
     }
 
     /**
