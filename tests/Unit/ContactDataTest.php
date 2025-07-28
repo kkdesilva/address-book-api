@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Tests\Unit;
+
 use App\DTOs\ContactData;
 
 it('replace spaces in phone number', function () {

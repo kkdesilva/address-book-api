@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Tests\Feature;
+
 use Illuminate\Testing\Fluent\AssertableJson;
 
 beforeEach(function () {
