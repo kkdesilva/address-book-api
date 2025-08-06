@@ -1,4 +1,5 @@
-# Propel Tech Test
+# Simple Address Book API
+
 
 ## Description
 - This project implements a simple RESTful Address Book API using Laravel.
